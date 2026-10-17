@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Withdraw - VOLTRIX</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+  body { background-color: #F9FAFB; color: #111827; padding: 15px 15px 80px 15px; min-height: 100vh; display: flex; justify-content: center; }
+  .app-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; margin-bottom: 10px; }
+  .back-btn { width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; border: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #2563EB; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+  .back-btn:active { transform: scale(0.95); background: #EFF6FF; }
+  .header-title { font-size: 18px; font-weight: 800; color: #111827; }
+  .records-btn { font-size: 12px; font-weight: 800; color: #2563EB; background: #EFF6FF; padding: 8px 14px; border-radius: 10px; border: 1px solid #BFDBFE; cursor: pointer; }
+  .status-banner { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 800; margin-bottom: 10px; }
+  .status-open { background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; }
+  .status-closed { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+  .card-selection-section { margin-bottom: 16px; }
+  .card-selection-title { font-size: 11px; font-weight: 800; color: #111827; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .compact-gold-card { background: linear-gradient(135deg, #F5C542, #D4AF37, #B8860B); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; color: #FFFFFF; box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3); cursor: pointer; border: 2px solid rgba(255,255,255,0.3); transition: 0.2s; }
+  .compact-gold-card:active { transform: scale(0.98); }
+  .cgc-left { display: flex; flex-direction: column; gap: 4px; }
+  .cgc-bank { font-size: 14px; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .cgc-number { font-size: 12px; font-family: monospace; letter-spacing: 1.5px; opacity: 0.95; text-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .cgc-right { text-align: right; }
+  .cgc-logo { font-size: 10px; font-weight: 900; letter-spacing: 1px; display: block; opacity: 0.9; }
+  .cgc-change { font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.25); padding: 4px 8px; border-radius: 8px; display: inline-block; margin-top: 4px; }
+  .no-card-alert { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; padding: 16px; border-radius: 14px; font-size: 13px; font-weight: 700; text-align: center; cursor: pointer; transition: 0.2s; }
+  .input-group { margin-bottom: 20px; }
+  .input-group label { display: block; font-size: 12px; font-weight: 800; color: #111827; margin-bottom: 8px; }
+  .input-wrap { position: relative; display: flex; align-items: center; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 14px; transition: 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+  .input-wrap:focus-within { border-color: #2563EB; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+  .input-wrap .prefix { position: absolute; left: 16px; font-size: 16px; font-weight: 900; color: #2563EB; }
+  .input-wrap input { width: 100%; padding: 16px 16px 16px 42px; border: none; background: transparent; font-size: 15px; font-weight: 700; color: #111827; outline: none; border-radius: 14px; }
+  .input-wrap input::placeholder { color: #9CA3AF; font-weight: 500; }
+  .max-btn { position: absolute; right: 12px; padding: 8px 12px; background: #EFF6FF; color: #2563EB; font-size: 11px; font-weight: 900; border-radius: 10px; border: 1px solid #BFDBFE; cursor: pointer; }
+  .amount-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; margin-bottom: 12px; }
+  .amount-btn { padding: 12px 6px; border-radius: 12px; font-size: 13px; font-weight: 800; text-align: center; transition: 0.2s; border: 1px solid transparent; cursor: pointer; }
+  .amount-btn.green { background: #F0FDF4; color: #16A34A; border-color: #BBF7D0; }
+  .amount-btn.green:active { background: #DCFCE7; transform: scale(0.95); }
+  .amount-btn.red { background: #FEF2F2; color: #DC2626; border-color: #FECACA; cursor: not-allowed; opacity: 0.6; }
+  .eye-icon { position: absolute; right: 16px; font-size: 18px; cursor: pointer; opacity: 0.6; }
+  .info-row { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; font-weight: 700; }
+  .info-row .charge { color: #6B7280; }
+  .info-row .receive { color: #16A34A; }
+  .info-row .receive span { font-weight: 900; }
+  .btn-primary { width: 100%; padding: 18px; background: #2563EB; color: #FFFFFF; font-size: 16px; font-weight: 800; border-radius: 16px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); transition: 0.2s; margin-top: 10px; margin-bottom: 24px; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .rules-card { background: #111827; border-radius: 20px; padding: 20px; color: #FFFFFF; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+  .rules-card h3 { font-size: 15px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; color: #F3F4F6; }
+  .rules-card ul { list-style: none; padding: 0; }
+  .rules-card li { font-size: 12px; line-height: 1.6; color: #D1D5DB; font-weight: 500; padding-left: 16px; position: relative; margin-bottom: 10px; }
+  .rules-card li:last-child { margin-bottom: 0; }
+  .rules-card li::before { content: '•'; color: #60A5FA; font-weight: 900; font-size: 16px; position: absolute; left: 0; top: -1px; }
+  .rules-card li b { color: #FFFFFF; font-weight: 800; }
+  .msg { display: none; align-items: center; justify-content: center; text-align: center; font-size: 12.5px; margin-top: 14px; font-weight: 700; padding: 12px 14px; border-radius: 12px; width: 100%; margin-bottom: 20px; }
+  .msg.show { display: flex; }
+  .msg.error { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; }
+  .msg.success { background: #F0FDF4; border: 1px solid #BBF7D0; color: #16A34A; }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+    <div class="header-title">Withdraw</div>
+    <button class="records-btn" onclick="window.location.href='withdraw-record.html'">Records</button>
+  </div>
+  <div id="statusBanner" class="status-banner status-open"><span id="statusIcon">🟢</span> <span id="statusText">Withdrawal is OPEN</span></div>
+  <div class="card-selection-section">
+    <div class="card-selection-title">Choose Your Withdrawal Card</div>
+    <div id="cardSelectionContent"></div>
+  </div>
+  <div class="input-group">
+    <label>Withdrawal Amount</label>
+    <div class="input-wrap"><span class="prefix">₦</span><input type="number" id="wdAmount" placeholder="Enter amount (₦1,000 - ₦100,000)" oninput="updateReceive()"><button class="max-btn" onclick="setMax()">MAX</button></div>
+    <div class="amount-grid" id="amountGrid"></div>
+    <div class="info-row"><span class="charge">Service charge 10%</span><span class="receive">You receive <span id="receiveAmount">₦0.00</span></span></div>
+  </div>
+  <div class="input-group">
+    <label>Payment Password</label>
+    <div class="input-wrap"><input type="password" id="wdPin" placeholder="Please enter payment password"><span class="eye-icon" onclick="togglePin()">👁️</span></div>
+  </div>
+  <button class="btn-primary" id="wdBtn" onclick="submitWithdraw()">Withdraw Now</button>
+  <p id="msg" class="msg"></p>
+  <div class="rules-card">
+    <h3>ℹ️ Withdrawal Rules</h3>
+    <ul>
+      <li>Minimum withdrawal is <b>₦1,000</b> and maximum is <b>₦100,000</b>.</li>
+      <li>A <b>10% service charge</b> applies to all withdrawals.</li>
+      <li>Withdrawals are paid to your <b>linked bank account only</b>.</li>
+      <li><b>Only one withdrawal</b> is allowed per day.</li>
+      <li>Processing time: <b>2 hours</b>.</li>
+    </ul>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+var MIN_WITHDRAW = 1000, MAX_WITHDRAW = 100000, SERVICE_CHARGE_PERCENT = 10;
+var FIXED_AMOUNTS = [1000, 3000, 5000, 10000, 30000, 100000];
+var currentUser = null;
+function $(id){ return document.getElementById(id); }
+function go(u){ window.location.href = u; }
+function f(n){ return '₦' + Number(n || 0).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function showMsg(t, type){ var m = $('msg'); m.textContent = t; m.className = 'msg show ' + (type || 'error'); setTimeout(function(){ m.className = 'msg'; }, 5000); }
+function togglePin() { var p = $('wdPin'); p.type = p.type === 'password' ? 'text' : 'password'; }
+function setMax() { if (!currentUser) return; $('wdAmount').value = Math.min(currentUser.balance, MAX_WITHDRAW); updateReceive(); }
+function updateReceive() { var amount = Number($('wdAmount').value) || 0; var charge = amount * (SERVICE_CHARGE_PERCENT / 100); $('receiveAmount').textContent = f(amount - charge > 0 ? amount - charge : 0); }
+function selectAmount(amt) { $('wdAmount').value = amt; updateReceive(); }
+
+function renderWithdrawalCard() {
+  var container = $('cardSelectionContent');
+  if (!currentUser) return;
+  if (currentUser.bankAccount && currentUser.bankName && currentUser.bankHolder) {
+    container.innerHTML = '<div class="compact-gold-card" onclick="go(\'add-bank.html\')"><div class="cgc-left"><div class="cgc-bank">' + currentUser.bankName + '</div><div class="cgc-number">**** **** ' + currentUser.bankAccount.slice(-4) + '</div></div><div class="cgc-right"><span class="cgc-logo">VOLTRIX</span><span class="cgc-change">Change ›</span></div></div>';
+  } else {
+    container.innerHTML = '<div class="no-card-alert" onclick="go(\'add-bank.html\')">⚠️ No card binded. Tap here to add a withdrawal card.</div>';
+  }
+}
+
+function renderAmountButtons() {
+  var grid = $('amountGrid'); grid.innerHTML = ''; var bal = currentUser.balance || 0;
+  FIXED_AMOUNTS.forEach(function(amt) {
+    var btn = document.createElement('button'); var isAvailable = bal >= amt;
+    btn.className = 'amount-btn ' + (isAvailable ? 'green' : 'red'); btn.textContent = '₦' + amt.toLocaleString();
+    if (isAvailable) { btn.onclick = function() { selectAmount(amt); }; } else { btn.disabled = true; }
+    grid.appendChild(btn);
+  });
+}
+
+// ⭐ FIXED: Always open for testing ⭐
+function checkWithdrawalWindow() {
+  return true; // Always open
+}
+
+function updateStatusBanner() {
+  var isOpen = checkWithdrawalWindow(); var banner = $('statusBanner'); var btn = $('wdBtn');
+  if (isOpen) { banner.className = 'status-banner status-open'; $('statusIcon').textContent = '🟢'; $('statusText').textContent = 'Withdrawal is OPEN'; btn.disabled = false; } 
+  else { banner.className = 'status-banner status-closed'; $('statusIcon').textContent = '🔴'; $('statusText').textContent = 'Withdrawal is CLOSED'; btn.disabled = true; }
+}
+
+async function submitWithdraw() {
+  if (!currentUser) return;
+  var amount = Number($('wdAmount').value), pin = $('wdPin').value.trim(), btn = $('wdBtn');
+  if (!currentUser.bankAccount) return showMsg('Please bind a withdrawal card first.', 'error');
+  if (!currentUser.pin) return showMsg('Please set your payment password first.', 'error');
+  if (!amount || amount < MIN_WITHDRAW) return showMsg('Minimum withdrawal is ' + f(MIN_WITHDRAW), 'error');
+  if (amount > MAX_WITHDRAW) return showMsg('Maximum withdrawal is ' + f(MAX_WITHDRAW), 'error');
+  if (amount > currentUser.balance) return showMsg('Insufficient balance. You have ' + f(currentUser.balance), 'error');
+  if (!pin || pin !== currentUser.pin) return showMsg('Incorrect payment password.', 'error');
+
+  var todayStr = new Date().toDateString(); var existingData = await dbGetWithdrawals(currentUser.userId);
+  if (existingData && existingData.length > 0) { var lastDate = new Date(existingData[0].created_at).toDateString(); if (lastDate === todayStr) return showMsg('You can only withdraw once per day.', 'error'); }
+
+  btn.disabled = true; btn.textContent = 'Processing…';
+  try {
+    var fee = amount * (SERVICE_CHARGE_PERCENT / 100); var netAmount = amount - fee;
+    await dbCreateWithdrawal({ user_id: currentUser.userId, amount: amount, fee: fee, net_amount: netAmount, bank_name: currentUser.bankName, bank_account: currentUser.bankAccount, bank_holder: currentUser.bankHolder, status: 'pending' });
+    await dbUpdateUser(currentUser.userId, { balance: currentUser.balance - amount });
+    showMsg('✅ Withdrawal submitted! Pending approval.', 'success');
+    setTimeout(function(){ go('withdraw-record.html'); }, 2000);
+  } catch (e) { console.error(e); showMsg('❌ ' + (e.message || 'Error processing withdrawal'), 'error'); btn.disabled = false; btn.textContent = 'Withdraw Now'; }
+}
+
+document.addEventListener('DOMContentLoaded', async function(){
+  currentUser = await requireLogin(); if (!currentUser) return;
+  renderWithdrawalCard(); renderAmountButtons(); updateStatusBanner();
+});
+</script>
+</body>
+</html>
